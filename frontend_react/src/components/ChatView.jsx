@@ -3,6 +3,7 @@ import { useChat, getActiveConversation, getMessagesForConversation } from '../s
 import { postJson, mockStream } from '../api/client.js';
 import { MessageBubble } from './MessageBubble';
 import { ChatComposer } from './ChatComposer';
+import { TalkToAI } from './TalkToAI.jsx';
 
 // Toggle mock streaming
 const STREAMING_PLACEHOLDER = true;
@@ -127,7 +128,10 @@ export function ChatView() {
           messages.map((m) => <MessageBubble key={m.id} message={m} />)
         )}
       </div>
-      <ChatComposer disabled={sending} onSend={handleSend} />
+      <div className="composer" style={{ paddingTop: 8 }}>
+        <TalkToAI />
+        <ChatComposer disabled={sending} onSend={handleSend} />
+      </div>
     </div>
   );
 }

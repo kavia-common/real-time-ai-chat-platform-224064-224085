@@ -25,9 +25,49 @@ export async function postJson(path, body, opts) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      // CORS-friendly defaults; real CORS is configured server-side, but these are safe headers client-side
+      'Accept': 'application/json',
     },
     signal: opts && opts.signal,
     body: JSON.stringify(body),
+    credentials: 'include', // allow cookies if backend uses them
+    mode: 'cors',
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Request failed: ${res.status} ${text}`);
+  }
+  return res.json();
+}
+
+/**
+ * PUBLIC_INTERFACE
+ * Voice chat convenience method.
+ * Sends { message } to `${API_BASE}/chat`.
+ */
+export async function voiceChat(message, opts) {
+  const payload = { message };
+  const useMock = (opts && opts.mock) || !API_BASE;
+  if (useMock) {
+    // Mock quick roundtrip
+    await new Promise((r) => setTimeout(r, 250));
+    return {
+      id: 'mock-' + Date.now(),
+      content: `You said: "${message}". Here's a helpful response in Ocean Professional style.`,
+      createdAt: new Date().toISOString(),
+    };
+  }
+  // Prefer /chat as requested; respect environment base without hardcoding URL.
+  const res = await fetch(`${API_BASE}/chat`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(payload),
+    credentials: 'include',
+    mode: 'cors',
+    signal: opts && opts.signal,
   });
   if (!res.ok) {
     const text = await res.text().catch(() => '');
