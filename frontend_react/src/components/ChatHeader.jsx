@@ -11,6 +11,7 @@ export function ChatHeader() {
 
   const status = (process.env.REACT_APP_API_BASE || process.env.REACT_APP_BACKEND_URL) ? 'online' : 'mock';
   const voiceFlagString = (process.env.REACT_APP_FEATURE_FLAGS || '').toString();
+  // Voice is managed via TalkToAI and feature flag 'feature.voice'
   const voiceEnabled = (() => {
     if (!voiceFlagString) return true;
     const map = new Map(
